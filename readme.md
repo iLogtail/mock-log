@@ -1,4 +1,4 @@
-iLogtail mock log tool,Based on [ilogtail-comparison](https://github.com/EvanLjp/ilogtail-comparison)   
+iLogtail mock log tool based on [ilogtail-comparison](https://github.com/EvanLjp/ilogtail-comparison)   
  
 Usage:
 ```
