@@ -84,11 +84,11 @@ var defaultConfig = `
 
 var logger = seelog.Disabled
 
-var stdoutFlag = flag.Bool("stdout", true, "")
-var stderrFlag = flag.Bool("stderr", false, "")
-var filePath = flag.String("path", "", "")
-var perLogFileSize = flag.Int("log-file-size", 20*1024*1024, "")
-var maxLogFileCount = flag.Int("log-file-count", 10, "")
+var stdoutFlag = flag.Bool("stdout", true, "output to stdout")
+var stderrFlag = flag.Bool("stderr", false, "output to stderr")
+var filePath = flag.String("path", "", "output to file path")
+var perLogFileSize = flag.Int("log-file-size", 20*1024*1024, "max log size")
+var maxLogFileCount = flag.Int("log-file-count", 10, "max rotated files")
 var logsPerSec = flag.Int("logs-per-sec", 1, "logs per second upper limit")
 var logType = flag.String("log-type", "java", "nginx java random json")
 var logErrType = flag.String("log-err-type", "random", "nginx java random json")
