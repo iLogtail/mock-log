@@ -14,6 +14,12 @@ import (
 	"github.com/cihub/seelog"
 )
 
+// log_format  '$log_time $remote_addr - $remote_user [$time_local] '
+//     	       '"$request" $status $body_bytes_sent '
+//             '"$http_referer" "$http_user_agent" '
+//             '"$http_x_forwarded_for" $log_count $request_id '
+//             '$geoip_country_name $geoip_country_code '
+//             '$geoip_region_name $geoip_city ';
 var nginxLog = `%s %s - - [21/Nov/2017:08:45:45 +0000] "POST /ngx_pagespeed_beacon?url=https%%3A%%2F%%2Fwww.example.com%%2Fads%%2Ffresh-oranges-1509260795 HTTP/2.0" 204 0 "https://www.example.com/ads/fresh-oranges-1509260795" "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:47.0) Gecko/20100101 Firefox/47.0" "-" %d %s Uganda UG Kampala Kampala
 `
 
