@@ -1,16 +1,32 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: mock-log-demo
+  name: mock-log-job
   namespace: default
 spec:
   template:
     metadata:
-      name: mock-log-demo
+      name: mock-log-job
     spec:
       restartPolicy: Never
       containers:
-      - name: mock-log-demo
-        image: registry.cn-hangzhou.aliyuncs.com/log-service/docker-log-test:latest
-        command: ["/bin/mock_log"]
-        args: ["--log-type=nginx", "--stdout=false", "--stderr=true", "--path=/var/log/nginx/access.log", "--total-count=1000000000", "--logs-per-sec=100"]
+        - name: mock-log-job
+          image: registry.cn-hangzhou.aliyuncs.com/log-service/docker-log-test:latest
+          command: ["/bin/mock_log"]
+          args:
+            [
+              "--log-type=nginx",
+              "--stdout=false",
+              "--stderr=true",
+              "--path=/var/log/nginx/access.log",
+              "--total-count=1000000000",
+              "--logs-per-sec=100",
+            ]
+          volumeMounts:
+            - mountPath: /etc/localtime
+              name: volume-localtime
+      volumes:
+        - hostPath:
+            path: /etc/localtime
+            type: ""
+          name: volume-localtime

@@ -89,12 +89,12 @@ var stderrFlag = flag.Bool("stderr", false, "")
 var filePath = flag.String("path", "", "")
 var perLogFileSize = flag.Int("log-file-size", 20*1024*1024, "")
 var maxLogFileCount = flag.Int("log-file-count", 10, "")
-var logsPerSec = flag.Int("logs-per-sec", 1, "")
+var logsPerSec = flag.Int("logs-per-sec", 1, "logs per second upper limit")
 var logType = flag.String("log-type", "java", "nginx java random json")
 var logErrType = flag.String("log-err-type", "random", "nginx java random json")
-var totalCount = flag.Int("total-count", 100, "")
-var itemLen = flag.Int("item-length", 100, "")
-var keyCount = flag.Int("key-count", 10, "")
+var totalCount = flag.Int("total-count", 100, "total log count, set -1 for infinity")
+var itemLen = flag.Int("item-length", 100, "value length in json log and nginx log")
+var keyCount = flag.Int("key-count", 10, "key count in json log")
 
 var nowCount = 0
 var ip = "127.0.0.1"
@@ -201,10 +201,10 @@ func main() {
 		jsonLog = mockJsonLog()
 	}
 	i := 0
-	for i < *totalCount {
+	for i < *totalCount || *totalCount < 0 {
 		startTime := time.Now()
 		timeStr := startTime.Format(time.RFC3339Nano)
-		for j := 0; j < *logsPerSec && i < *totalCount; j++ {
+		for j := 0; j < *logsPerSec && (i < *totalCount || *totalCount < 0); j++ {
 			dumpOneLog(timeStr)
 			i++
 		}

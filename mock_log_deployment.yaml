@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: mock-log-deploy
+  name: mock-log-deploy
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mock-log-deploy
+  template:
+    metadata:
+      labels:
+        app: mock-log-deploy
+    spec:
+      containers:
+        - image: registry.cn-hangzhou.aliyuncs.com/log-service/docker-log-test:latest
+          command: ["/bin/mock_log"]
+          args:
+            [
+              "--log-type=nginx",
+              "--path=/var/log/nginx/access.log",
+              "--total-count=-1",
+              "-item-length=600",
+              "--logs-per-sec=20000",
+            ]
+          imagePullPolicy: Always
+          name: mock-log-deploy
+          resources:
+            limits:
+              cpu: 1000m
+              memory: 64Mi
+            requests:
+              cpu: 100m
+              memory: 32Mi
+          volumeMounts:
+            - mountPath: /etc/localtime
+              name: volume-localtime
+      restartPolicy: Always
+      volumes:
+        - hostPath:
+            path: /etc/localtime
+            type: ""
+          name: volume-localtime
