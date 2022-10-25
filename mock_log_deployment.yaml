@@ -21,17 +21,19 @@ spec:
           args:
             [
               "--log-type=nginx",
+              "--stdout=false",
+              "--stderr=true",
               "--path=/var/log/nginx/access.log",
               "--total-count=-1",
-              "-item-length=600",
-              "--logs-per-sec=20000",
+              "--item-length=600",
+              "--logs-per-sec=100",
             ]
           imagePullPolicy: Always
           name: mock-log-deploy
           resources:
             limits:
               cpu: 1000m
-              memory: 64Mi
+              memory: 128Mi
             requests:
               cpu: 100m
               memory: 32Mi

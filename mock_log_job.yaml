@@ -11,6 +11,13 @@ spec:
       restartPolicy: Never
       containers:
         - name: mock-log-job
+          resources:
+            limits:
+              cpu: 1000m
+              memory: 128Mi
+            requests:
+              cpu: 100m
+              memory: 32Mi
           image: registry.cn-hangzhou.aliyuncs.com/log-service/docker-log-test:latest
           command: ["/bin/mock_log"]
           args:
@@ -19,6 +26,7 @@ spec:
               "--stdout=false",
               "--stderr=true",
               "--path=/var/log/nginx/access.log",
+              "--item-length=600",
               "--total-count=1000000000",
               "--logs-per-sec=100",
             ]
