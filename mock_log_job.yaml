@@ -1,0 +1,40 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: mock-log-job
+  namespace: default
+spec:
+  template:
+    metadata:
+      name: mock-log-job
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: mock-log-job
+          resources:
+            limits:
+              cpu: 1000m
+              memory: 128Mi
+            requests:
+              cpu: 100m
+              memory: 32Mi
+          image: registry.cn-hangzhou.aliyuncs.com/log-service/docker-log-test:latest
+          command: ["/bin/mock_log"]
+          args:
+            [
+              "--log-type=nginx",
+              "--stdout=false",
+              "--stderr=true",
+              "--path=/var/log/nginx/access.log",
+              "--item-length=600",
+              "--total-count=1000000000",
+              "--logs-per-sec=100",
+            ]
+          volumeMounts:
+            - mountPath: /etc/localtime
+              name: volume-localtime
+      volumes:
+        - hostPath:
+            path: /etc/localtime
+            type: ""
+          name: volume-localtime

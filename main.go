@@ -14,7 +14,13 @@ import (
 	"github.com/cihub/seelog"
 )
 
-var nginxLog = `%s - [%s] - - [18/Jun/2019:15:48:47 +0800] "GET /%s HTTP/1.1" 308 171 "-" "%s" %d 0.000 [default-http-svc3-80] - - - - %s %s
+// log_format  '$remote_addr - $remote_user [$time_local] '
+//     	       '"$request" $status $body_bytes_sent '
+//             '"$http_referer" "$http_user_agent" '
+//             '"$http_x_forwarded_for" $log_count $request_id '
+//             '$geoip_country_name $geoip_country_code '
+//             '$geoip_region_name $geoip_city ';
+var nginxLog = `%s - - [%s] "POST /ngx_pagespeed_beacon?url=https%%3A%%2F%%2Fwww.example.com%%2Fads%%2Ffresh-oranges-1509260795 HTTP/2.0" 204 0 "https://www.example.com/ads/fresh-oranges-1509260795" "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:47.0) Gecko/20100101 Firefox/47.0" "-" %d %s Uganda UG Kampala Kampala
 `
 
 var javaStackLogCount = 3
@@ -69,6 +75,8 @@ Locked ownable synchronizers:
 			 
 `
 
+var jsonLog string
+
 var defaultConfig = `
 <seelog type="asynctimer" asyncinterval="5000" minlevel="info" >
  <outputs formatid="common">
@@ -82,17 +90,17 @@ var defaultConfig = `
 
 var logger = seelog.Disabled
 
-var stdoutFlag = flag.Bool("stdout", true, "")
-var stderrFlag = flag.Bool("stderr", false, "")
-var filePath = flag.String("path", "", "")
-var perLogFileSize = flag.Int("log-file-size", 20*1024*1024, "")
-var maxLogFileCount = flag.Int("log-file-count", 10, "")
-var logsPerSec = flag.Int("logs-per-sec", 1, "")
+var stdoutFlag = flag.Bool("stdout", true, "output to stdout")
+var stderrFlag = flag.Bool("stderr", false, "output to stderr")
+var filePath = flag.String("path", "", "output to file path")
+var perLogFileSize = flag.Int("log-file-size", 20*1024*1024, "max log size")
+var maxLogFileCount = flag.Int("log-file-count", 10, "max rotated files")
+var logsPerSec = flag.Int("logs-per-sec", 1, "logs per second upper limit")
 var logType = flag.String("log-type", "java", "nginx java random json")
 var logErrType = flag.String("log-err-type", "random", "nginx java random json")
-var totalCount = flag.Int("total-count", 100, "")
-var itemLen = flag.Int("item-length", 100, "")
-var keyCount = flag.Int("key-count", 10, "")
+var totalCount = flag.Int("total-count", 100, "total log count, set -1 for infinity")
+var itemLen = flag.Int("item-length", 100, "value length in json log and nginx log")
+var keyCount = flag.Int("key-count", 10, "key count in json log")
 
 var nowCount = 0
 var ip = "127.0.0.1"
@@ -149,6 +157,8 @@ func mockJsonLog() string {
 	for i := 0; i < *keyCount; i++ {
 		kv[RandString(10)] = RandString(*itemLen)
 	}
+	kv["count"] = "%d"
+	kv["log_time"] = "%s"
 	val, _ := json.Marshal(kv)
 	val = append(val, '\n')
 	return string(val)
@@ -158,11 +168,11 @@ func mockOneLog(timeStr, logType string) string {
 	nowCount++
 	switch logType {
 	case "nginx":
-		return fmt.Sprintf(nginxLog, ip, ip, RandString(16), RandString(16), nowCount, RandString(16), RandString(*itemLen))
+		return fmt.Sprintf(nginxLog, ip, timeStr, nowCount, RandString(*itemLen))
 	case "java":
 		return fmt.Sprintf(javaStackLog, timeStr, nowCount, timeStr, nowCount, timeStr, nowCount)
 	case "json":
-		return mockJsonLog()
+		return fmt.Sprintf(jsonLog, nowCount, timeStr)
 	}
 	return fmt.Sprintf("%s %d %s\n", timeStr, nowCount, RandString(*itemLen))
 }
@@ -193,11 +203,14 @@ func main() {
 		}
 	}
 	ip, _ = getMachineIP()
+	if *logType == "json" {
+		jsonLog = mockJsonLog()
+	}
 	i := 0
-	for i < *totalCount {
+	for i < *totalCount || *totalCount < 0 {
 		startTime := time.Now()
 		timeStr := startTime.Format(time.RFC3339Nano)
-		for j := 0; j < *logsPerSec && i < *totalCount; j++ {
+		for j := 0; j < *logsPerSec && (i < *totalCount || *totalCount < 0); j++ {
 			dumpOneLog(timeStr)
 			i++
 		}
