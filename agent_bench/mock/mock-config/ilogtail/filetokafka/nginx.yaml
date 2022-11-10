@@ -1,0 +1,10 @@
+enable: true
+inputs:
+  - Type: file_log # 文件输入类型
+    LogPath: /var/log/mock*/ # 文件路径Glob匹配规则
+    FilePattern: "*.log" # 文件名Glob匹配规则
+    TailSizeKB: 1024
+flushers:
+  - Type: flusher_kafka
+    Brokers: [192.168.1.11:7092]
+    Topic: ilogtail_bench

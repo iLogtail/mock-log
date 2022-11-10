@@ -1,0 +1,54 @@
+data_dir = "/home/aivin/mock/mock-tools/vector"
+
+[sources.mock-log]
+type = "file"
+ignore_older_secs = 6000000
+include = [ "/home/aivin/mock/mock-log/*" ]
+read_from = "end"
+
+[sources.mock-log.multiline]
+start_pattern = "^\\[[0-9]{4}-[0-9]{2}-[0-9a-zA-z]+:[0-9]+:[0-9]+\\.[0-9]+\\+[0-9]+:[0-9]+]\\s.*"
+mode = "continue_through"
+condition_pattern = '(^$)|(^[^\[])'
+timeout_ms = 1000
+
+[sinks.mock-log-sink]
+type = "file"
+inputs = [ "mock-log" ]
+compression = "none"
+path = "/home/aivin/mock/mock-out/vector.log"
+
+[sinks.mock-log-sink.buffer]
+type = "disk"
+when_full = "block"
+max_size = 268435488
+
+[sinks.mock-log-sink.encoding]
+codec = "json"
+
+
+[sources.mock-log-1]
+type = "file"
+ignore_older_secs = 6000000
+include = [ "/home/aivin/mock/mock-log-1/*" ]
+read_from = "beginning"
+
+[sources.mock-log-1.multiline]
+start_pattern = "^\\[\\d+-\\d+-\\w+:\\d+:\\d+\\.\\d+\\+\\d+:\\d+]\\s.*"
+mode = "continue_through"
+condition_pattern = '(^$)|(^[^\[])'
+timeout_ms = 1000
+
+[sinks.mock-log-sink-1]
+type = "file"
+inputs = [ "mock-log-1" ]
+compression = "none"
+path = "/home/aivin/mock/mock-out/vector-1.log"
+
+[sinks.mock-log-sink-1.buffer]
+type = "disk"
+when_full = "block"
+max_size = 268435488
+
+[sinks.mock-log-sink-1.encoding]
+codec = "json"
