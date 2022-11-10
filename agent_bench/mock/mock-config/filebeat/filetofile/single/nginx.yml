@@ -1,0 +1,24 @@
+filebeat.registry.path: /home/aivin/mock/mock-tools/filebeat/registry
+
+filebeat.config.inputs:
+  enable: true
+  path: ${path.config}/input.yml
+  reload.enabled: true
+  reload.period: 2s
+
+output.file:
+  path: /home/aivin/mock/mock-out
+  filename: filebeat
+  rotate_every_kb: 1000000
+  number_of_files: 7
+  permissions: 0600
+  close_inactive: 15m
+
+logging.level: error
+logging.to_files: true
+logging.files:
+  path: /home/aivin/mock/mock-tools/filebeat
+  name: filebeat.log
+  keepfiles: 7
+  permissions: 0664
+  rotateeverybytes: 52428800

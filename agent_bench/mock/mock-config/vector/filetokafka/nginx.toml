@@ -1,0 +1,39 @@
+#                                    __   __  __
+#                                    \ \ / / / /
+#                                     \ V / / /
+#                                      \_/  \/
+#
+#                                    V E C T O R
+#                                   Configuration
+#
+# ------------------------------------------------------------------------------
+# Website: https://vector.dev
+# Docs: https://vector.dev/docs
+# Chat: https://chat.vector.dev
+# ------------------------------------------------------------------------------
+
+# Change this to use a non-default directory for Vector data storage:
+data_dir = "/app/vector/data"
+
+# file logs
+[sources.nginx_logs]
+type = "file"
+ignore_older_secs = 6000000
+include = [ "/var/log/mock-log/*","/var/log/mock-log-1/*" ]
+read_from = "end"
+
+[sinks.my_logs]
+type = "kafka"
+inputs = [ "nginx_logs" ]
+bootstrap_servers = "192.168.1.11:7092"
+topic = "vector_bench"
+compression = "snappy"
+
+[sinks.my_logs.encoding]
+codec = "json"
+
+[sinks.my_logs.healthcheck]
+enabled = false
+
+[sinks.my_logs.acknowledgements]
+enabled = true

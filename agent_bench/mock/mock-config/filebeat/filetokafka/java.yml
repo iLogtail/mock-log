@@ -1,0 +1,22 @@
+filebeat.registry.path: /app/filebeat/registry
+
+filebeat.config.inputs:
+  enable: true
+  path: ${path.config}/multi-input.yml
+  reload.enabled: true
+  reload.period: 2s
+
+output.kafka:
+  hosts: ["192.168.1.11:7092"]
+  topic: "filebeat_bench"
+  required_acks: 1
+  compression: snappy
+
+logging.level: error
+logging.to_files: true
+logging.files:
+  path: /var/log/filebeat
+  name: filebeat.log
+  keepfiles: 7
+  permissions: 0664
+  rotateeverybytes: 52428800

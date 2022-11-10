@@ -1,0 +1,31 @@
+enable: true
+inputs:
+  - Type: file_log # 文件输入类型
+    LogPath: /home/aivin/mock/mock-log # 文件路径Glob匹配规则
+    FilePattern: "*.log" # 文件名Glob匹配规则
+processors:
+  - Type: processor_regex
+    SourceKey: content
+    Regex: (\S*)\s*-\s*\[([^]^[]*)\]\s*-\s*-\s*\[(\d+/\S+/\d+:\d+:\d+:\d+)\s+\S+\]\s*"(\S*)\s*(\S*)\s*(\S*)"\s*(\S*)\s*(\S*)\s*"([^"]*)"\s*\s*"([^"]*)"\s*(\S*)\s*(\S*)\s*\[([^]^[]*)\]\s*-\s*-\s*-\s*-\s*(\S*)\s*(\S*).*
+    Keys:
+      - nginx_addr
+      - remote_addr
+      - time_local
+      - request_method
+      - requet_path
+      - http_version
+      - status
+      - body_bytes_sent
+      - http_referer
+      - http_user_agent
+      - request_time
+      - upstream_response_time
+      - user_agent
+      - host_name
+      - request_url
+flushers:
+  - Type: flusher_stdout
+    OnlyStdout: false
+    FileName: /home/aivin/mock/mock-out/ilogtail.log
+    MaxSize: 107374182400
+    MaxRolls: 100000

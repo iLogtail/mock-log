@@ -1,0 +1,9 @@
+- type: log
+  enabled: true
+  paths:
+    - /home/aivin/mock/mock-log/*
+
+- type: log
+  enabled: true
+  paths:
+    - /home/aivin/mock/mock-log-1/*
